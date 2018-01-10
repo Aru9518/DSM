@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Informacion</title>
+</head>
+<body>
+    <style>
+        body{
+            background-color: #1b3881;  /* Color de fondo  */
+        }
+        table {
+            border: 4px solid red;   /* Borde de fuera de la tabla */
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td{
+            border: 1px solid red; /* Borde finito de dentro de la tabla */
+            text-align: center;
+            padding: 8px;
+            color: white;
+            background-color: #1b3881;
+
+            height: 18px;
+        }
+         th {
+            border: 1px solid red; /* Borde finito de dentro de la tabla */
+            text-align: center;
+            padding: 8px;
+            color: white;
+            background-color: #463c54;
+        }
+
+         tr{
+             height: 96px;
+         }
+
+        tr:nth-child(even) { /* Espacio entre filas */
+            background-color: white;
+            height: 18px;
+        }
+        p, td{    /* Cajitas blancas */
+            color: white;
+            font-weight: 700;
+            width: 30%;
+            height: 18px;
+            text-align: justify;
+        }
+    </style>
+    <picture>
+        <source media="(min-width: 650px)" srcset="file:///C:/wamp/www/mangafest.png">
+        <source media="(min-width: 465px)" srcset="file:///C:/wamp/www/mangafest.png">
+        <img src="file:///C:/wamp/www/mangafest.png" alt="Mangafest" style="width:auto;">
+    </picture>
+
+    <div style="background-color: #1b3881; height: 39px; padding-top: 3px;">
+
+
+    </div>
+
+    <p>Aquí podrás encontrar los precios y horarios de todos los días que dura el salon del comic de Sevilla: </p>
+    <br>
+    <table border = 1>
+        <th> Lunes </th>
+        <th> Martes </th>
+        <th> Miercoles </th>
+        <th> Jueves </th>
+        <th> Viernes </th>
+        <th> Sabado </th>
+        <th> Domingo </th>
+        <br>
+        <tr>
+            <td> 11:30 a 20:30 </td>
+            <td> 11:30 a 20:30 </td>
+            <td> 11:30 a 20:30 </td>
+            <td> 11:30 a 20:30 </td>
+            <td> 11:00 a 21:00 </td>
+            <td> 10:00 a 21:30 </td>
+            <td> 10:00 a 21:00 </td>
+        </tr>
+    </table>
+    <br>
+    <br>
+    <br>
+    <table border = 1>
+        <th> De Domingo a Jueves</th>
+        <th> Viernes </th>
+        <th> Sabado </th>
+        <th> Abono Viernes, Sabado y Domingo</th>
+        <th> Abono semanal </th>
+
+        <tr>
+            <td> 8 euros </td>
+            <td> 9 euros </td>
+            <td> 10 euros </td>
+            <td> 22 euros </td>
+            <td> 40 euros </td>
+        </tr>
+    </table>
+    <br>
+    <br>
+    <br>
+
+    <table border=1>
+        <tbody>
+        <th style="width: 100%; " colspan = "3" > Puntos de venta </th>
+        <tr>
+            <td style = "background-color: #65C400;">Venta anticipada <em>online</em></td>
+            <td colspan="2">En la esquina superior derecha podrás encontrar la venta <em>online</em>.&nbsp;Disponible desde el 29 de junio hasta el 30 de noviembre.</td>
+        </tr>
+        <tr>
+            <td style="height: 192px; background-color: orange;" rowspan="2">Venta física anticipada</td>
+            <td style=" height: 96px;" colspan="2">
+                <p>Entradas disponibles en&nbsp;<strong>Arigatô Sevilla</strong>: pasaje Azahares, número 37, Sevilla.</p>
+                <p>Los lunes en horario de 17:30 a 20:30 y de martes a sábado en horario de 11:00 a 14:00 y de 17:30 a 20:30.</p>
+                <br>
+                <p>Disponible desde el día 10 de octubre hasta el 24 de noviembre.</p>
+            </td>
+        </tr>
+        <tr style="height: 96px;">
+            <td style="text-align: center; height: 96px;" colspan="2">
+                <p>Entradas disponibles en <strong>FIBES, Sevilla</strong>.</p>
+                <p>Desde el 27 de noviembre hasta el 30 de noviembre en horario de 17:00 a 20:00 horas.</p>
+            </td>
+        </tr>
+        <tr style="height: 19px;">
+            <td style="height: 55px;  background-color: cyan;" rowspan="3">Venta física en taquilla&nbsp;&nbsp;</td>
+            <td style="height: 19px;">Viernes 1 de diciembre</td>
+            <td>13:00 h a 21:00 h</td>
+        </tr>
+        <tr>
+            <td>Sábado 2 de diciembre</td>
+            <td>9:00 h a 21:00 h</td>
+        </tr>
+        <tr>
+            <td>Domingo 3 de diciembre</td>
+            <td>9:00 h a 20:00 h</td>
+        </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
