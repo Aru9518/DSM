@@ -71,6 +71,112 @@
         }
     </style>
 
+    <style>
+        #pagina {
+            background-color: #cccccc;
+        }
+
+        header {
+            background-color: #ffffcc;
+        }
+
+        footer {
+            background-color: #ffffcc;
+            clear: both;
+        }
+
+        nav {
+            /* background-color: #ffccff; */
+        }
+
+        section {
+            background-color: #ccffff;
+            width: 500px;
+            float: left;
+            padding-top: 5px;
+            padding-right: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;  -moz-column-count: 2;
+            -webkit-column-count: 2;
+            column-count: 2;  -moz-column-rule: 5px solid #66cccc;
+            -webkit-column-rule: 5px solid #66cccc;
+            column-rule: 5px solid #66cccc;
+        }
+
+        aside {
+            background-color: #ccccff;
+            margin-left: 510px;
+        }
+
+        div {
+            width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #separacion{
+            height: 0px;
+        }
+
+
+        nav ul {
+            list-style-type: none;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+        }
+
+        nav li {
+            width: 150px;
+            text-align: center;
+            float: left;
+        }
+
+        .submenu {
+            display: none;
+        }
+
+        #menu > li:hover > ul {
+            display: block;
+        }
+
+        #menu {
+            width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0px;
+        }
+
+        .sinflotar {
+            clear: both;
+            margin-top: 29px;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-weight: bold;
+            font-family: "Arial", "Helvetica", "sans-serif";
+            font-size: 16px;
+            line-height: 30px;
+            color: white;
+            background-color: red;
+            display: block;
+        }
+
+        nav a:hover {
+            background-color: #993300;
+        }
+
+        nav {
+            z-index: 5;
+            top: 28px;
+            position: absolute;
+            width: 800px;
+        }
+
+    </style>
+
     <script>
         function quedan(){
             var apertura = 1512133200*1000;
@@ -100,6 +206,9 @@
 </head>
 
 <body>
+
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+
 <div id="main">
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -241,143 +350,6 @@
 
 
 
-
-
-    <div style="background-color: #1b3881; padding-bottom: 20px;">
-
-        <div id="site_content">
-
-
-
-            <div id="content_izq" class="noticias_bloque bloque_azul">
-                <h3>Más noticias</h3>
-                <div class="titulo"><a href="noticia/50/todavia-no-has-visto-nuestros-divertidos-sketches">¿Todavía no has visto nuestros divertidos «sketches»?</a> <span>| 7 nov, 2017</span></div>
-                <div class="titulo"><a href="noticia/48/riete-haz-amigos-y-enamorate-en-mangafest">¡Ríete, haz amigos y enamórate en Mangafest!</a> <span>| 5 nov, 2017</span></div>
-                <div class="titulo"><a href="noticia/46/mangafest-2017-te-presenta-a-su-lista-de-asociaciones">Mangafest 2017 te presenta a su lista de asociaciones</a> <span>| 4 nov, 2017</span></div>
-                <div class="titulo"><a href="noticia/43/mangafest-2017-te-trae-el-concurso-karaokevision">Mangafest 2017 te trae el Concurso Karaokevision</a> <span>| 3 nov, 2017</span></div>
-                <div class="titulo"><a href="noticia/42/ya-tenemos-a-los-participantes-del-concurso-cosmascotas">¡Ya tenemos a los participantes del concurso CosMascotas!</a> <span>| 2 nov, 2017</span></div>
-                <div style="float: right; font-weight: bold;"><a href="noticias">Ver más...</a></div>
-            </div>
-
-            <div id="content_central" class="bloque_azul">
-                <h3>Encuesta</h3>
-                <script>
-
-                    $(function(){
-                        $("#encuesta_respuestas input").click(function(){
-                            //Enviar respuesta
-                            valor = $(this).val();
-                            //console.log("valor: "+valor);
-
-                            $.get("enviar_encuesta.php", {e: 8, n: valor});
-
-                            $("#encuesta_resultado").css("display", "block");
-                            $("#encuesta_respuestas").animate({opacity: "0"}, 500);
-                            $("#encuesta_resultado").animate({opacity: "100"}, 4000);
-                        });
-                    });
-                </script>
-                <div id="encuesta_titulo">
-                    ¡Volvamos a los 80! ¿Cuál anime era tu perdición?
-                </div>
-                <div id="encuesta_respuestas" style="">
-                    <input type="radio" name="encuesta" value="4"> Dragon Ball.<br>
-                    <input type="radio" name="encuesta" value="3"> Ranma 1/2.<br>
-                    <input type="radio" name="encuesta" value="2"> Caballeros del Zodiaco.<br>
-                    <input type="radio" name="encuesta" value="1"> Otro... ¡Cuéntanos en nuestras redes sociales!<br>
-
-                </div>
-                <div id="encuesta_resultado" style="opacity: 0; display: none; position: relative; top: -60px; ">¡Gracias por participar!</div>
-            </div>
-
-            <div style="float: right; margin-top: 10px;">
-                <div id="content_central" class="bloque_azul" style="margin-top: 0px;">
-                    <div style="padding: 10px;">
-
-                        <h3 style="margin-bottom: 3px;">Estado venta entradas</h3>
-
-                        <div style="padding-bottom: 1px; padding-top: 0px; font-size: 10px;">Entradas de viernes:</div>
-                        <div style="border: 1px solid black; width: 100%; background-color: white; height: 20px;">
-                            <div id="barra_viernes" style="background-color: red; width: 34%; height: 100%; white-space: nowrap;"><div style="color: black; padding-top: 2px; padding-left: 5px; opacity: 1;"><span>34</span>% vendidas</div></div>
-                        </div>
-
-                        <div style="padding-bottom: 1px; padding-top: 5px; font-size: 10px;">Entradas de sábado:</div>
-                        <div style="border: 1px solid black; width: 100%; background-color: white; height: 20px;">
-                            <div id="barra_sabado" style="background-color: green; width: 100%; height: 100%; white-space: nowrap;"><div style="color: black; padding-top: 2px; padding-left: 5px; opacity: 1;"><span>100</span>% vendidas</div></div>
-                        </div>
-
-                        <div style="padding-bottom: 1px; padding-top: 5px;  font-size: 10px;">Entradas de domingo:</div>
-                        <div style="border: 1px solid black; width: 100%; background-color: white; height: 20px;">
-                            <div id="barra_domingo" style="background-color: orange; width: 54%; height: 100%; white-space: nowrap;"><div style="color: black; padding-top: 2px; padding-left: 5px; opacity: 1;"><span>54</span>% vendidas</div></div>
-                        </div>
-
-                        <div style="padding-bottom: 1px; padding-top: 5px; font-size: 10px;">Entradas Premium:</div>
-                        <div style="border: 1px solid black; width: 100%; background-color: white; height: 20px;">
-                            <div id="barra_premium" style="background-color: blue; width: 100%; height: 100%; white-space: nowrap;"><div style="color: black; padding-top: 2px; padding-left: 5px; opacity: 1;"><span>100</span>% vendidas</div></div>
-                        </div>
-
-                        <div style="font-size: 10px; margin-top: 3px; padding-top: 3px;">Datos aproximados, la información puede mostrarse con cierta demora.</div>
-
-                    </div>
-
-                    <script>
-                        $(function(){
-
-                            $.getJSON("obtener_estado_venta.php", null, function(data){
-                                //console.log(data);
-                                $("#barra_viernes").animate({width: data.v+"%"}, 2000, function(){ $("#barra_viernes>div").animate({opacity: 1}, 1000); });
-                                $("#barra_viernes span").html(data.v);
-                                $("#barra_sabado").animate({width: data.s+"%"}, 2000, function(){ $("#barra_sabado>div").animate({opacity: 1}, 1000); });
-                                $("#barra_sabado span").html(data.s);
-                                $("#barra_domingo").animate({width: data.d+"%"}, 2000, function(){ $("#barra_domingo>div").animate({opacity: 1}, 1000); });
-                                $("#barra_domingo span").html(data.d);
-                                $("#barra_premium").animate({width: data.premium+"%"}, 2000, function(){ $("#barra_premium>div").animate({opacity: 1}, 1000); });
-                                $("#barra_premium span").html(data.premium);
-                            })
-                        });
-                    </script>
-
-
-
-
-                </div>
-            </div>
-
-
-        </div>
-
-    </div>
-
-
-
-
-    <footer style="min-height: 111px;">
-
-
-
-
-
-        <div id="anteriores_eventos">
-            Anteriores eventos:
-            <ul>
-                <li> <a href="http://mangafest.es/2016" target="_blank">Mangafest 2016</a></li>
-                <li> <a href="http://mangafest.es/2015" target="_blank">Mangafest 2015</a></li>
-                <li> <a href="http://mangafest.es/2014" target="_blank">Mangafest 2014</a></li>
-                <li> <a href="http://mangafest.es/2013" target="_blank">Mangafest 2013</a></li>
-                <li> <a href="http://mangafest.es/2012" target="_blank">Mangafest 2012</a></li>
-
-
-
-            </ul>
-        </div>
-        <p style="margin-top: 26px;">Copyright © Mangafest 2017<br>
-            <a href="https://www.facebook.com/mangafestSP" target="_blank" style="color: #3B5998;">Facebook</a> | <a href="http://twitter.com/mangafest" target="_blank" style="color: #30D8F0;">Twitter</a> | <a href="http://youtube.com/BestwaygroupSP" target="_blank" style="color: #DB4538;">Youtube</a> | <a href="https://www.instagram.com/mangafest" target="_blank" style="color: #d71a9a;">Instagram</a>
-            <br>
-            Mangafest se reserva el derecho de modificar parcial o totalmente el contenido e información de esta web sin previo aviso. Información válida salvo error u omisión.</p>
-    </footer>
-
-
-
     <div style="background-color: #1b3881; height: 10px;"></div>
 
 
@@ -390,30 +362,6 @@
         <div style="padding-top: 5px; text-align: justify; margin-top: 5px;"><span style="font-weight: bold;">Gamingfest</span> es tu sitio. Haz clic <a style="color: white; font-weight: bold;" href="http://gamingfest.es" target="_blank">aquí</a> para más información.</div>
     </div>
     -->
-    <script>
-
-        $(function(){
-            setTimeout(function(){
-                var alto_aviso = "15px";
-                alto_aviso = "70px";
-                $("#aviso").animate({
-                    opacity: "1",
-                    bottom: alto_aviso
-                }, 2000, null);
-            }, 3000);
-        });
-        function cerrarAviso(){
-            $.get("cierra_aviso.php", null, function(){
-                $("#aviso").css("display", "none");
-            });
-        }
-
-    </script>
-
-
-
-
-
 
 </div>
 
@@ -437,7 +385,103 @@
         });
     });
 </script>
+<script>
+
+    /*
+* Slider
+* Visit http://createjs.com/ for documentation, updates and examples.
+*
+* Copyright (c) 2010 gskinner.com, inc.
+*
+* Permission is hereby granted, free of charge, to any person
+* obtaining a copy of this software and associated documentation
+* files (the "Software"), to deal in the Software without
+* restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following
+* conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+    (function() {
+
+        /**
+         * Simple slider control for EaselJS examples.
+         **/
+        function Slider(min, max, width, height) {
+            this.Shape_constructor();
+
+            // public properties:
+            this.min = this.value = min||0;
+            this.max = max||100;
+
+            this.width = width||100;
+            this.height = height||20;
+
+            this.values = {};
+
+            this.trackColor = "#EEE";
+            this.thumbColor = "#666";
+
+            this.cursor = "pointer";
+            this.on("mousedown", this._handleInput, this);
+            this.on("pressmove", this._handleInput, this);
+        }
+        var p = createjs.extend(Slider, createjs.Shape);
 
 
+// public methods:
+        p.isVisible = function() { return true; };
+
+        p.draw = function(ctx, ignoreCache) {
+            if (this._checkChange()) {
+                var x = (this.width-this.height) * Math.max(0,Math.min(1,(this.value-this.min) / (this.max-this.min)));
+                this.graphics.clear()
+                    .beginFill(this.trackColor).drawRect(0,0,this.width,this.height)
+                    .beginFill(this.thumbColor).drawRect(x,0,this.height, this.height);
+            }
+            this.Shape_draw(ctx, true);
+        };
+
+
+// private methods:
+        p._checkChange = function() {
+            var a = this, b = a.values;
+            if (a.value !== b.value || a.min !== b.min || a.max !== b.max || a.width !== b.width || a.height !== b.height) {
+                b.min = a.min;
+                b.max = a.max;
+                b.value = a.value;
+                b.width = a.width;
+                b.height = a.height;
+                return true;
+            }
+            return false;
+        };
+
+        p._handleInput = function(evt) {
+            var val = (evt.localX-this.height/2)/(this.width-this.height)*(this.max-this.min)+this.min;
+            val = Math.max(this.min, Math.min(this.max, val));
+            if (val == this.value) { return; }
+            this.value = val;
+            this.dispatchEvent("change");
+        };
+
+
+        window.Slider = createjs.promote(Slider, "Shape");
+    }());
+
+</script>
 
 </body></html>punto1" src="images/punto_azul.png">
