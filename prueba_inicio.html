@@ -17,8 +17,6 @@
         //ctx.strokeStyle='black';
         //ctx.fillStyle="black";
         //ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",10,50);
-
-
         ctx.font="bold 30pt 'Indie Flower', cursive";
         ctx.lineWidth='1';
         ctx.strokeStyle='red';
@@ -29,7 +27,6 @@
 
     <script>
         function quedan(){
-
             var apertura = 1545792244100 + 1500000000;
             var d = new Date();
             var n = d.getTime();
@@ -54,8 +51,9 @@
         });
     </script>
 
+    <img name="slider" id="slider" width="1200px" height="500px">
     <script>
-        var noticias;
+       /* var noticias;
         $.getJSON("noticias_json.php", {}, function(data){
             noticias = data;
             for(var i=2; i<=noticias.length; i++){
@@ -64,7 +62,7 @@
         });
         var contador_noticias = 0;
         var anterior_punto = 1;
-
+        cargarNoticia();
         function cargarNoticiaManual(id){
             contador_noticias = id-1;
             clearInterval(interval_noticias);
@@ -73,9 +71,7 @@
                 //console.log("dos");
                 cargarNoticia();
             }, 5000);
-
         }
-
         function cargarNoticia(){
             $("#noticia").css("background-image", "url('./Imagenes/Slideshare/"+noticias[contador_noticias].id+".jpg')");
             $("#noticia_titulo").html(noticias[contador_noticias].titulo);
@@ -89,14 +85,34 @@
             }else{
                 contador_noticias++;
             }
-
         }
-
-
         var interval_noticias = setInterval(function(){
             //console.log("uno");
             cargarNoticiaManual(2);
-        }, 5000);
+        }, 5000);*/
+
+       window.addEventListener('load', function(){
+           console.log('El contenido se ha cargado');
+           document.slider.src = 'Imagenes/Slideshare/Anbu.jpg';
+           var imagenes = [];
+           imagenes[0] = 'Imagenes/Slideshare/Anbu.jpg';
+           imagenes[1] = 'Imagenes/Slideshare/ninja.jpg';
+
+           var i = 0;
+           var tiempo = 3000;
+
+           function cambiar_imagen() {
+               document.slider.src = imagenes[i];
+               if(i<1){
+                   console.log('HE ENTRADO EN EL IF');
+                   i++;
+               }else{
+                   i = 0;
+               }
+           }
+
+           setInterval(cambiar_imagen, tiempo);
+       });
 
     </script>
 
@@ -151,17 +167,6 @@
     </ul>
 </nav>
 
-<a class="noticias" id="noticia" href="/DSM/Imagenes/Slideshare" style="background-image: url(./Imagenes/Slideshare/Anbu.jpg); width: 100%; height: 300px; position: relative; background-size: cover; background-position: center center; display: block; text-decoration: none; transition: 1s;">
-    <div style="width: 900px; margin: auto; padding-top: 200px;">
-        <div style="border: 3px solid white; background-color: 	rgba(27, 56, 129, 0.8); width: 600px; height: 50px; margin-left: 250px; color: white; font-size: 22px; padding: 10px; box-shadow: black 10px 10px 20px; position: relative; margin-left: 5px;">
-            <div id="noticia_titulo" style="font-family: Roboto;">¡Échale un vistazo a las empresas que colaboran con nosotros!</div>
-            <div id="noticia_fecha" style="font-size: 14px; position: absolute; bottom: 10px; right: 10px;">17 de noviembre, 12:00</div>
-        </div>
-    </div>
-</a>
-
-<img onclick="cargarNoticiaManual(1);" id="punto1" src="Imagenes/punto_blanco.png">
-<img style="" onclick="cargarNoticiaManual(2);" id="punto2" src="Imagenes/punto_azul.png">
 
 <ul id="video">
     <iframe width="560" height="315" src="https://www.youtube.com/embed/SFMSK1Ivg6Q" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
