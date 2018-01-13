@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Juego</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=10">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <style>
+            html {
+                height: 100%; /* Required for liquid/fluid layout. */
+                margin: 0;
+                padding: 0;
+                overflow: hidden; /* Don't let default browser behaviors interfere with rapid-fire game play. */
+                -ms-content-zooming: none; /* Don't let default browser behaviors interfere with rapid-fire game play. */
+                content-zooming: none; /* Use the standard when available. */
+                -ms-touch-action: none; /* Don't let default browser behaviors interfere with rapid-fire game play. */
+                touch-action: none; /* Use the standard when available. */
+            }
+
+            body {
+                height: 100%; /* Required for liquid/fluid layout. */
+                margin: 0;
+                padding: 0;
+                background-color: #056;
+            }
+
+            iframe {
+                display: none; /* The iframe should be initially hidden. */
+                position: absolute;
+                width: 80%;
+                margin-left: 10%;
+                margin-right: 10%; /* This actually isn't needed be makes things clear. */
+                top: 1em;
+                height: 95%;
+                max-height: 40em;
+                border: 1px solid white;
+                box-shadow: 5px 5px 15px;
+            }
+
+            svg {
+                margin: 0;
+                padding: 0;
+            }
+
+            .metroButton {
+                fill: #09F;
+                cursor: pointer;
+            }
+
+            .metroButton:hover {
+                fill: #666;
+            }
+
+            .metroText {
+                fill: white;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+        </style>
+
+</head>
+<body>
+<body>
+<iframe id="iframe" src="boulderBopInfo.html"></iframe> <!-- This is initially hidden via CSS. -->
+<svg width="100%" height="100%" viewBox="0 0 1200 800">
+    <defs>
+        <g id="buttonGraphic">
+            <rect x="0" y="0" width="105" height="40"></rect> <!-- Note that this could be replaced with a much more complicated and colorful graphic. -->
+        </g>
+
+        <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="100%">
+            <stop offset="0%" style="stop-color: darkblue;"></stop>
+            <stop offset="73%" style="stop-color: #00BFFF;"></stop>
+            <stop offset="87%" style="stop-color: #87CEFA"></stop>
+            <stop offset="100%" style="stop-color: #999"></stop>
+        </linearGradient>
+
+        <radialGradient id="bossGradient">
+            <stop offset="0%" style="stop-color: yellow;"></stop>
+            <stop offset="50%" style="stop-color: black;"></stop>
+            <stop offset="100%" style="stop-color: yellow;"></stop>
+        </radialGradient>
+    </defs>
+
+    <g transform="translate(0, 10)"> <!-- Define the y-coordinate for the row of buttons and status indicators so that they can be moved vertically as a group. -->
+        <g id="startButton" class="metroButton" transform="translate(10)">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#buttonGraphic"></use> <!-- "xlink:" is required for WebKit browsers. -->
+            <text class="metroText" x="22" y="31" font-size="30">Start</text>
+        </g>
+
+        <g id="soundButton" class="metroButton" transform="translate(130)">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#buttonGraphic"></use>
+            <text class="metroText" x="10" y="31" font-size="30">Sound</text>
+        </g>
+
+        <g id="infoButton" class="metroButton" transform="translate(250)">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#buttonGraphic"></use>
+            <text class="metroText" x="28" y="31" font-size="30">Info</text>
+        </g>
+
+        <g id="level" transform="translate(855)">
+            <text class="metroText" x="30" y="32" font-size="30">Level: 1</text>
+        </g>
+
+        <g id="score" transform="translate(1028)">
+            <text class="metroText" x="9" y="32" font-size="30">Score: 0</text>
+        </g>
+    </g>
+    <clipPath id="playingFieldClipPath">
+        <rect x="0" y="0" width="1180" height="725"></rect>
+    </clipPath>
+    <g id="playingField" transform="translate(10, 60)" clip-path="url(#playingFieldClipPath)">  <!-- Game objects are always on top of the background. -->
+        <rect id="gameBackground" x="0" y="0" width="1180" height="725" fill="url(#skyGradient)" stroke="white" stroke-width="4"></rect>
+        <g id="activeGameObjectsContainer"><!-- Active game objects injected via JavaScript here. --><circle id="1" fill="#963" fill-opacity="undefined" stroke="white" stroke-width="2" cx="41" r="36" cy="-36"></circle></g>
+        <rect id="gameClickPlane" width="1180" height="725" opacity="0"></rect> <!-- Always on top so it can capture all click events. -->
+        <g id="staticGameObjectsContainer"><!-- Static game objects (like bunkers) injected via JavaScript here. --><image x="76.5%" y="82%" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="bunker.png" id="rightBunker" height="64" width="142"></image><image x="43.25%" y="82%" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="bunker.png" id="middleBunker" height="64" width="142"></image><image x="10%" y="82%" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="bunker.png" id="leftBunker" height="64" width="142"></image></g> <!-- Note that it makes no sense to click a bunker and bunkers must always be on top. -->
+    </g>
+</svg>
+<script>
+    'use strict';
+
+    // Constants:
+    var DEBUG = false; // When set to true, displays the contents of the game object list in a console window.
+    var FPS = 60; // The frames per second for the animations. Anything below 60 starts to look jerky. Adjusting this value does not effect the action-speed of the game.
+    var GAME_SPEED = 1; // Increase this value to increase the action-speed of the game (not effected by the FPS value).
+    var TARGET_SENSITIVITY = 15; // Increase this value to decrease collision detection sensitivity (i.e., increase to make things less accurate with regard to collision detection).
+
+    var BUNKER_IMAGE = "Imagenes/Juego/blaster.png";
+
+    var BUNKER_EXPLOSION_SOUND = "bunker.mp3";
+
+    var BOOM_IMAGE = "Imagenes/Juego/boom.png";
+    var BOOM_SOUND = "boom.mp3";
+
+    var FIREBALL_IMAGE = "Imagenes/Juego/Fireball.png";
+    var FIREBALL_SOUND = "Fireball.mp3";
+    var FIREBALL_DISAPPEAR_RATE = 1.8 / FPS * GAME_SPEED; // Increase this numberic value to increase the rate at which the fireball disappears.
+
+    var MISSILE_RADIUS = 10; // In SVG user units.
+    var MISSILE_SPEED = 600 / FPS * GAME_SPEED; // Increase the numeric value to increase the speed that a missile moves across the screen.
+
+    var MAX_MISSILE_EXPLOSION_RADIUS = 50;
+
+    var MAX_BOULDER_RADIUS = 40;
+    var MIN_BOULDER_RADIUS = 10;
+    var BOULDER_SPEED = 180 / FPS * GAME_SPEED;
+
+    var BOSS_RADIUS = 50;
+    var BOSS_SPEED = 300 / FPS * GAME_SPEED;
+
+    var BOSS_MIRV_SPEED = FPS / 1.25 / GAME_SPEED; // Increase the numeric value to increase the rate at which the boss spews bolders (or MIRVs).
+    var BOSS_MIRV_SOUND = "MIRV.mp3";
+
+    var BOULDER_POINTS = 5;
+    var MISSILE_POINTS = -1;
+    var BUNKER_POINTS = -20;
+    var BOSS_POINTS = 50;
+
+    var GAME_OVER_SOUND = "Imagenes/Juego/Soviet.ogg";
+
+    var globals = {}; // Would-be global variables are stored here (less the above uppercase "constants").
+
+    /*************************************************************************************************************************************************************/
+
+    globals.helpers = (function() { // A self executing constructor.
+        var _svgRoot = document.getElementsByTagName('svg')[0]; // Minimize DOM accesses.
+        var _svgNS = _svgRoot.namespaceURI;
+        var _gameClickPlane = document.getElementById('gameClickPlane');
+        var _activeGameObjectsContainer = document.getElementById('activeGameObjectsContainer');
+        var _staticGameObjectsContainer = document.getElementById('staticGameObjectsContainer');
+        var _playingField = document.getElementById('playingField');
+        var _uniqueID = 1; // As in DOM element IDs.
+        var that = {};
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createPoint = function(x, y) {
+            var point = _svgRoot.createSVGPoint(); // A native method that creates an SVG point object.
+
+            point.x = x || 0;
+            point.y = y || 0;
+
+            return point;
+        }; // createPoint()
+
+        that.createPoint = createPoint;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createCircle = function(spec) { // Public.
+            var circle = document.createElementNS(_svgNS, 'circle');
+            circle.cx.baseVal.value = spec.x || 0;
+            circle.cy.baseVal.value = spec.y || 0;
+            circle.r.baseVal.value = spec.radius || 0;
+            circle.id = spec.id || _uniqueID++; // _uniqueID is incremented only if it's used (or spec.id is zero).
+            circle.setAttribute("fill", spec.fill || "black");
+            circle.setAttribute("fill-opacity", spec.fillOpacity); // If spec.fillOpacity is undefined, the system defaults to 1 (which is what you want).
+            circle.setAttribute("stroke", spec.stroke || "black");
+            circle.setAttribute("stroke-width", spec.strokeWidth || 1);
+
+            if (spec.movable) {
+                _activeGameObjectsContainer.appendChild(circle); // Place the circle in the active DOM container.
+            }
+            else {
+                _staticGameObjectsContainer.appendChild(circle); // Place the circle in the static DOM container.
+            }
+
+            return circle;
+        }; // createCircle()
+
+        that.createCircle = createCircle;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createImage = function(spec) { // Public.
+            var image = document.createElementNS(_svgNS, 'image');
+            image.setAttribute('x', spec.x || 0); // Use setAttribute() in case spec.x is a string, like "18%".
+            image.setAttribute('y', spec.y || 0);
+            image.width.baseVal.value = spec.width || (_svgRoot.width.baseVal.value / 10);
+            image.height.baseVal.value = spec.height || (_svgRoot.height.baseVal.value / 10);
+            image.setAttributeNS('http://www.w3.org/1999/xlink','href', spec.image); // Required for WebKit browers.
+            image.id = spec.id || _uniqueID++; // _uniqueID is incremented only if it's used (or spec.id is zero).
+
+            if (spec.movable) {
+                _activeGameObjectsContainer.appendChild(image); // Make the last image be physically on top of any prior images.
+            }
+            else {
+                _staticGameObjectsContainer.appendChild(image); // Make the last image be physically on top of any prior images.
+            }
+
+            return image;
+        }; // createImage()
+
+        that.createImage = createImage;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createText = function(spec) { // Public.
+            var text = document.createElementNS(_svgNS, 'text');
+            text.textContent = spec.text || "";
+            text.setAttribute('x', spec.x || 0); // Use setAttribute() in case spec.x is a string, like "18%".
+            text.setAttribute('y', spec.y || 0);
+            text.setAttribute('stroke', spec.stroke || "black");
+            text.setAttribute('stroke-width', spec.strokeWith || 2);
+            text.setAttribute('fill', spec.fill || "black");
+            text.setAttribute('style', 'font-size: ' + spec.fontSize || "100%");
+            text.id = spec.id || _uniqueID++; // _uniqueID is incremented only if it's used (or spec.id is zero).
+
+            _playingField.appendChild(text);
+
+            return text;
+        }; // createText()
+
+        that.createText = createText;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var removeText = function(spec) { // Public.
+            var textElement = document.getElementById(spec.id);
+
+            if (textElement) {
+                textElement.parentNode.removeChild(textElement);
+            }
+        }; // removeText()
+
+        that.removeText = removeText;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var euclideanDistance = function(point1, point2) { // Public. Returns the distance between the two points.
+            var xDelta = point2.x - point1.x;
+            var yDelta = point2.y - point1.y;
+            var xDeltaSquared = xDelta * xDelta;
+            var yDeltaSquared = yDelta * yDelta;
+
+            return Math.sqrt(xDeltaSquared + yDeltaSquared);
+        } // euclideanDistance()
+
+        that.euclideanDistance = euclideanDistance;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var coordinateTransform = function(screenPoint, someSvgObject) // Public. Converts screen coordinates to SVG user-space coordinates.
+            /*
+            Given a screen point (of type SVGPoint), returns the point relative to the coordinate system associated with someSvgObject. Assumes someSvgObject is some
+            type of SVG object such as a circle object.
+            */
+        {
+            var CTM = someSvgObject.getScreenCTM(); // Get the current transformation matrix (CTM) for someSvgObject. The CTM defines the mapping from the user coordinate system into the viewport coordinate system.
+
+            return screenPoint.matrixTransform(CTM.inverse()); // Return the point in the coordinate system associated with someSvgObject.
+        }; // coordinateTransform()
+
+        that.coordinateTransform = coordinateTransform;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var circlesOverlap = function(circleA, circleB) { // Public. Returns true if the SVG circles A and B overlap, false otherwise.
+            var deltaX = circleA.cx.baseVal.value - circleB.cx.baseVal.value;
+            var deltaY = circleA.cy.baseVal.value - circleB.cy.baseVal.value;
+            var distance = Math.sqrt( (deltaX*deltaX) + (deltaY*deltaY) ); // The classic distance-between-two-points formula.
+            var radiusA = circleA.r.baseVal.value; // The radius of circle A.
+            var radiusB = circleB.r.baseVal.value; // The radius of circle B.
+
+            if (circleA.id == circleB.id) // If true, circleA and circleB are the same circle.
+                return false;
+
+            return distance <= (radiusA + radiusB);
+        }; // circlesOverlap()
+
+        that.circlesOverlap = circlesOverlap;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var opacify = function(Boolean) { // Public. If Boolean is true (in honor of George Boole), then opacify. Otherwise, set the opacity to its normal state.
+            if (Boolean) {
+                _gameClickPlane.setAttribute("opacity", 0.35);
+                _staticGameObjectsContainer.setAttribute("opacity", 0.25);
+            }
+            else {
+                _gameClickPlane.setAttribute("opacity", 0);
+                _staticGameObjectsContainer.setAttribute("opacity", 1);
+            }
+        }; // opacity()
+
+        that.opacify = opacify;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var bossLevel = function(gameLevel) { // Public.
+            return gameLevel % 4 == 0; // Returns true on the 4th, 8th, 12th, etc. levels.
+        }
+
+        that.bossLevel = bossLevel;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        return that; // The result of executing this constructor.
+    })(); // Execute this anonymous constructor now.
+
+    /*************************************************************************************************************************************************************/
+
+    globals.game = (function(spec) { // The spec parameter is used as a local static variable in a number of the following methods.
+        var _updateID = null;
+        var _bossBouldersID = null;
+        var _objects = []; // Will contain all of the game's objects.
+        var _gameClickPlaneWidth = document.getElementById('gameClickPlane').width.baseVal.value; // In SVG user units.
+        var _gameClickPlaneHeight = document.getElementById('gameClickPlane').height.baseVal.value; // In SVG user units.
+        var _maxBunkerWidth = 0;
+        var _scoreBox = document.getElementById('score').firstElementChild; // A very small performance optimization (i.e., do this once).
+        var _levelBox = document.getElementById('level').firstElementChild; // A very small performance optimization (i.e., do this once).
+        var that = {}; // The object returned by the Game "constructor".
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var getClosestBunker = function(targetPosition) { // Private. Returns the bunker (i.e., a game bunker object) that is closest to targetPosition.
+            var shortestDistance = Number.POSITIVE_INFINITY;
+            var gameObjectsLength = _objects.length; // A small performance optimization.
+            var gameObject = null;
+            var closestBunker = null; // Return null if a closest bunker can't be found.
+
+            for (var i = 0; i < gameObjectsLength; i++) {
+                gameObject = _objects[i];
+
+                if (gameObject.type == "bunker" && gameObject.active) {
+                    var distance = globals.helpers.euclideanDistance(gameObject.getPosition(), targetPosition); // Returns the distance between the two SVG points.
+
+                    if (distance < shortestDistance) {
+                        closestBunker = gameObject;
+                        shortestDistance = distance;
+                    } // if
+                } // if
+            } // for
+
+            return closestBunker;
+        }; // Game.getClosestBunker()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var getRandomBunker = function() { // Private. Returns a randomly chosen (active) bunker object.
+            var gameObjectsLength = _objects.length; // A small performance optimization.
+            var gameObject = null;
+            var bunkers = [];
+
+            for (var i = 0; i < gameObjectsLength; i++) {
+                gameObject = _objects[i];
+
+                if (gameObject.type == "bunker" && gameObject.active) {
+                    bunkers.push(gameObject);
+                } // if
+            } // for
+
+            var randomIndex = Math.floor(Math.random() * bunkers.length); // Returns an integer between 0 and bunkers.length - 1
+
+            return bunkers[randomIndex]; // Return a randomly chosen bunker object from all available bunker objects.
+        }; // Game.getRandomBunker()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var GameObject = function(spec) { // Private constructor. The base game object constructor - all game objects stem from this constructor.
+            var that = {};
+
+            that.active = spec.active;
+            if (typeof(that.active) == "undefined" || that.active == null) {
+                that.active = true;
+            }
+
+            that.movable = spec.movable;
+            if (typeof(that.movable) == "undefined" || that.movable == null) {
+                that.movable = true;
+            }
+
+            that.radius = spec.radius || 0; // It's possible that spec.radius is purposely set to zero, so honor this possibility.
+            that.type = spec.type || 'unknown';
+            that.core = spec.core || null;
+
+            that.x = spec.x; // The initial position of the game object.
+            that.y = spec.y;
+
+            that.targetX = spec.targetX; // The target of the game object (like where a missile should explode).
+            that.targetY = spec.targetY;
+
+            var deltaX = that.targetX - that.x; // Used to calculate a unit vector (i.e., direction vector).
+            var deltaY = that.targetY - that.y;
+            var magnitude = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) ); // Distance, as the crow flies, between the two points.
+
+            that.unitX = (deltaX / magnitude); // The x-component of the unit vector from the point (that.x, that.y) to the point (that.targetX, that.targetY).
+            that.unitY = (deltaY / magnitude); // The y-component of the unit vector from the point (that.x, that.y) to the point (that.targetX, that.targetY).
+
+            if (getState().sound) { // True if the user wants sound to be played. False otherwise.
+                that.audio = new Audio(spec.soundPath); // spec.soundPath is a path to an MP3 file.
+                if (that.audio) { // If a valid spec.soundPath path was supplied, play the sound effect for the game object (otherwise don't).
+                    that.audio.preload = "auto"; // Attempt to reduce audio latency.
+                    that.audio.play();
+                } // if
+            } // if
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var setPosition = function(x, y) { // Public method.
+                that.x = x || 0;
+                that.y = y || 0;
+            }; // Game.GameObject.setPosition()
+
+            that.setPosition = setPosition;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var getPosition = function() { // Public.
+                return globals.helpers.createPoint(that.x, that.y); // In the form of an SVG point object, returns the position of this game object's position.
+            }; // Game.GameObject.getPosition()
+
+            that.getPosition = getPosition; // Make the method public.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public. The default move() method is a NOP.
+            }; // Game.GameObject.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var collisionDetection = function() { // Public. The default collisionDetection() method is a NOP in that some of the objects created using GameObject() do not move.
+            }; // Game.GameObject.collisionDetection()
+
+            that.collisionDetection = collisionDetection;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var exited = function() { // Public.
+                return (!that.active); // It's definitely true that a non-active game object has logically exited the game.
+            }; // Game.GameObject.exited()
+
+            that.exited = exited;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var remove = function() { // Public.
+                var arrayIndex = _objects.indexOf(that); // Return the array index associated with this game object.
+                var core = that.core;
+
+                if (arrayIndex == -1) {
+                    console.log('Error in GameObject.remove(), "that" = ' + that + ' object not found in _objects[], arrayIndex = ' + arrayIndex); // Defensive programming good!
+                    return;
+                }
+
+                if (that.type == "bunker") {
+                    updateScore(BUNKER_POINTS); // Majorly debit the user when a bunker is destroyed.
+                }
+
+                var removeChild = core.parentNode.removeChild(core); // Remove the game object from the DOM, and thus from the screen.
+                if (!removeChild) {
+                    console.log('Error in GameObject.remove(), "that" = ' + that + ' object was not removed from DOM'); // Defensive programming good!
+                    return;
+                } // if
+
+                _objects.splice(arrayIndex, 1); // Remove the game object from the array of game objects.
+            }; // Game.GameObject.remove()
+
+            that.remove = remove;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var markActive = function(Boolean) { // Public.
+                that.active = Boolean; // In honor of George Boole, "Boolean" is capitalized (and also because "boolean" is a reserved word).
+            }; // Game.GameObject.markActive()
+
+            that.markActive = markActive;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that; // Return the result of calling the GameObject constructor.
+        } // Game.GameObject()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var Bunker = function(spec) { // Private.
+            var that = GameObject(spec); // Get all the methods and properties exposed by the GameObject constructor.
+
+            that.core = globals.helpers.createImage(spec); // Note that spec.x and spec.y could be specified in terms of percentages.
+
+            if (that.core.width.baseVal.value > _maxBunkerWidth) {
+                _maxBunkerWidth = that.core.width.baseVal.value; // _maxBunkerWidth is global to the Game namespace.
+            }
+
+            var bunkerCenterX = that.core.x.baseVal.value + (that.core.width.baseVal.value / 2);
+            var bunkerCenterY = that.core.y.baseVal.value + (that.core.height.baseVal.value / 2);
+
+            that.setPosition(bunkerCenterX, bunkerCenterY); // Record the center of the bunker's image as the position of the bunker.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var collisionDetection = function() { // Public.
+                for (var i = 0; i < _objects.length; i++) {
+                    if (_objects[i].type == "boulder") {
+                        var boulderX = _objects[i].core.cx.baseVal.value;
+                        var boulderY = _objects[i].core.cy.baseVal.value;
+
+                        if ( Math.abs(boulderX - bunkerCenterX) < TARGET_SENSITIVITY && Math.abs(boulderY - bunkerCenterY) < TARGET_SENSITIVITY) {
+                            _objects[i].markActive(false); // Mark the boulder object as inactive so that exited() returns true on it in the main game loop (i.e., in update()).
+
+                            var bunkerExplosionSpec = {};
+
+                            bunkerExplosionSpec.type = "bunkerExplosion";
+                            bunkerExplosionSpec.fill = "red";
+                            bunkerExplosionSpec.stroke = "white";
+                            bunkerExplosionSpec.strokeWidth = 3; // In SVG user units.
+                            bunkerExplosionSpec.movable = false; // So that the bunker explosions are drawn on top of the bunker images.
+                            bunkerExplosionSpec.x = bunkerCenterX;
+                            bunkerExplosionSpec.y = bunkerCenterY;
+                            bunkerExplosionSpec.targetBunker = that;
+                            bunkerExplosionSpec.soundPath = BUNKER_EXPLOSION_SOUND;
+
+                            _objects.push(BunkerExplosion(bunkerExplosionSpec));
+                        } // if
+                    } // if
+                } // for
+            }; // Game.Bunker.collisionDetection()
+
+            that.collisionDetection = collisionDetection;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that;
+        } // Game.Bunker()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var BunkerExplosion = function(spec) { // Private.
+            var that = MissileExplosion(spec);
+            var speed = 3.5 / FPS * GAME_SPEED; // Increase this numeric value to increase the rate at which the missile explosion expands.
+            var maxBunkerExplosionRadius = _maxBunkerWidth / 1.8; // Only make this calculation once. Decrease the numeric value to make the bunker explosion radius larger. Note that _maxBunkerWidth is a Game namepspace global.
+            var t = 0;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                t += speed;
+
+                var currentRadius = that.core.r.baseVal.value = maxBunkerExplosionRadius * Math.sin(t);
+
+                if (Math.abs(maxBunkerExplosionRadius - currentRadius) < 5) { // Returns true when the radius of the bunker explosion is close to its maximum value.
+                    spec.targetBunker.markActive(false); // This code is invoked multiple times while "Math.abs(that.radius - currentRadius) < 5" is true. And it's safe to mark the target bunker object as inactive (i.e., destroyed, so that it will be removed) multiple times.
+                }
+
+                if (currentRadius <= 0) {
+                    that.markActive(false); // Mark the bunker explosion object as inactive so that _objects[i].exited() returns true on it.
+                }
+            }; // Game.bunkerExplosion.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var collisionDetection = function() { // Public. Don't use MissileExplosion's inherited collisionDetection() method.
+                // NOP.
+            }; // Game.bunkerExplosion.collisionDetection()
+
+            that.collisionDetection = collisionDetection;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that;
+        }; // Game.bunkerExplosion()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var Missile = function(spec) { // Private. The Boulder() constructor inherits from this constructor.
+            var that = GameObject(spec);
+
+            that.core = globals.helpers.createCircle(spec);
+            that.setPosition(that.core.cx.baseVal.value, that.core.cy.baseVal.value); // Set the initial position of the missile.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var exited = function() { // Public.
+                var offset = -(MAX_BOULDER_RADIUS + 1); // In SVG user units. This ensures that the boulders initially positioned just off screen won't be tagged as having exited the playing field.
+
+                if (!that.active) { // Any game object that is marked as inactive has logically exited the game.
+                    return true;
+                }
+
+                if (that.core.cx.baseVal.value < 0 || that.core.cy.baseVal.value < offset) { // Left and top part of the playing field.
+                    return true;
+                } // if
+
+                if (that.core.cx.baseVal.value > _gameClickPlaneWidth || that.core.cy.baseVal.value > _gameClickPlaneHeight) { // Right and bottom part of the playing field.
+                    return true;
+                } // if
+
+                return false;
+            }; // Game.Missile.exited()
+
+            that.exited = exited;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                var positionX = (that.core.cx.baseVal.value += that.unitX * MISSILE_SPEED);
+                var positionY = (that.core.cy.baseVal.value += that.unitY * MISSILE_SPEED);
+
+                var colorString = 'fill: rgb(';
+                colorString = colorString + parseInt(Math.abs(positionX) % 256) + ', '; // Constrain the values to be an integer inclusively between 0 and 255.
+                colorString = colorString + parseInt(Math.abs(positionY) % 256) + ', ';
+                colorString = colorString + parseInt(Math.abs(positionX + positionY) % 256) + ')';
+                that.core.setAttribute('style', colorString);
+
+                if ( Math.abs(positionX - that.targetX) < TARGET_SENSITIVITY && Math.abs(positionY - that.targetY) < TARGET_SENSITIVITY) {
+                    that.markActive(false); // Mark the missile object as inactive so that _objects[i].exited() returns true on it (in the main game loop in update()).
+
+                    var missileExplosionSpec = {};
+                    missileExplosionSpec.type = "missileExplosion";
+                    missileExplosionSpec.fill = "gold";
+                    missileExplosionSpec.stroke = "white";
+                    missileExplosionSpec.strokeWidth = 2; // In SVG user units.
+                    missileExplosionSpec.x = that.targetX;
+                    missileExplosionSpec.y = that.targetY;
+                    missileExplosionSpec.radius = 0; // Start a missile explosion with a radius of zero, since this radius sinusoidally grows from a radius equal to 0.
+                    missileExplosionSpec.movable = true; // Allow the user to click on top of an explosion to send another missile.
+
+                    _objects.push(MissileExplosion(missileExplosionSpec));
+                } // if
+            }; // Game.Missile.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that; // Return the object created by the Missile constructor.
+        }; // Game.Missile()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var MissileExplosion = function(spec) { // Private.
+            var that = GameObject(spec); // Get all the methods and properties currently exposed by the GameObject constructor.
+            var speed = 3 / FPS * GAME_SPEED; // Increase this numeric value to increase the rate at which the missile explosion expands.
+            var t = 0; // A local static variable.
+
+            that.core = globals.helpers.createCircle(spec);
+            that.setPosition(that.core.cx.baseVal.value, that.core.cy.baseVal.value);
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                t += speed;
+                that.core.r.baseVal.value = MAX_MISSILE_EXPLOSION_RADIUS * Math.sin(t);
+                if (that.core.r.baseVal.value <= 0) {
+                    that.markActive(false); // Mark this game object as inactive so that objects[i].exited() returns true.
+                } // if
+            }; // Game.MissileExplosion.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var collisionDetection = function() { // Public. Note that this method is called from a FOR loop (so this is actually a doubly nested FOR loop).
+                for (var i = 0; i < _objects.length; i++) {
+                    if (_objects[i].type == "boulder" && globals.helpers.circlesOverlap(that.core, _objects[i].core)) {
+                        var boomSpec = {};
+
+                        boomSpec.type = "boom";
+                        boomSpec.image = BOOM_IMAGE;
+                        boomSpec.width = 202; // Actual size of image in pixels - reduce if necessary.
+                        boomSpec.height = 156;
+                        boomSpec.x = _objects[i].core.cx.baseVal.value - (boomSpec.width / 2);
+                        boomSpec.y = _objects[i].core.cy.baseVal.value - (boomSpec.height / 2);
+                        boomSpec.soundPath = BOOM_SOUND;
+
+                        _objects.push(Boom(boomSpec));
+
+                        _objects[i].markActive(false); // Mark the boulder object as inactive so that it'll be removed.
+                        updateScore(BOULDER_POINTS); // Credit the score since the user destroyed a boulder with a missile.
+                    } // if
+                } // for
+            }; // Game.MissileExplosion.collisionDetection()
+
+            that.collisionDetection = collisionDetection;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that;
+        }; // Game.MissileExplosion()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createMissile = function(target) { // Public. The target parameter is a point object representing the location (center point) of where the missile should explode.
+            var missileSpec = getClosestBunker(target).getPosition(); // Get the position of the bunker that is closest to target.
+            missileSpec.targetX = target.x;
+            missileSpec.targetY = target.y;
+            missileSpec.type = "missile";
+            missileSpec.radius = MISSILE_RADIUS; // In SVG user units.
+            missileSpec.stroke = "white";
+
+            _objects.push(Missile(missileSpec));
+
+            updateScore(MISSILE_POINTS); // Debit the user for firing a missile.
+        }; // Game.createMissile()
+
+        that.createMissile = createMissile; // A public method for one or more event handers.
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var Boulder = function(spec) { // Private.
+            var that = Missile(spec); // A boulder is a lot like a missile, so use it's constructor.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                that.core.cx.baseVal.value += that.unitX * BOULDER_SPEED;
+                that.core.cy.baseVal.value += that.unitY * BOULDER_SPEED;
+
+                if (that.exited()) { // Use the Missile constructor's exited() method here.
+                    that.markActive(false); // Mark the boulder object as inactive so as to get it out of _objects[] (and thus out of the game).
+                }
+            }; // Game.Boulder.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that; // Return the object created by the Boulder constructor.
+        }; // Game.Boulder()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var Boss = function(spec) { // Private.
+            var bossHitCount = spec.level; // The difficulty of killing the boss increases for each boss-level.
+            var ignoreList = []; // Contains objects that hit the boss (so we don't get false hits on our collision detection).
+            var speed = 2 / FPS * GAME_SPEED; // Increase the numeric value to increase the oscillation rate of the boss.
+            var t = 0;
+            var that = GameObject(spec);
+
+            that.core = globals.helpers.createCircle(spec);
+            that.setPosition(that.core.cx.baseVal.value, that.core.cy.baseVal.value); // Set the initial position of the boss.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                var positionX = (that.core.cx.baseVal.value += that.unitX * BOSS_SPEED);
+                var positionY = (that.core.cy.baseVal.value += that.unitY * BOSS_SPEED);
+
+                if ( Math.abs(positionX - that.targetX) < TARGET_SENSITIVITY && Math.abs(positionY - that.targetY) < TARGET_SENSITIVITY) {
+                    that.move = getRandomPattern(); // Redefine the move() method when the boss reaches the center of the screen.
+                }
+
+                function getRandomPattern() {
+                    var pattern = Math.floor(Math.random() * 5); // Returns a random value between 0 and 4. Recall that Math.random() returns a value in the range [0, 1)
+                    var patterns = []; // An array containing various move() function pointers.
+                    var theta = 0;
+                    var pattern0Speed = 0.7 / FPS * GAME_SPEED; // Increase the numeric value to increase the rate at which the boss zooms around (for this evasive pattern).
+                    var pattern1Speed = 1.2 / FPS * GAME_SPEED;
+                    var pattern2Speed = 0.4 / FPS * GAME_SPEED;
+                    var pattern3Speed = 0.9 / FPS * GAME_SPEED;
+                    var pattern4Speed = 2.2 / FPS * GAME_SPEED;
+                    var minimumSqueeze = 3; // Decreasing this value makes the minimum radius of the boss oscillation closer to zero while keeping the maximum amplitude constant at BOSS_RADIUS.
+                    var constantAmplitude = BOSS_RADIUS / (minimumSqueeze + 1);
+                    var frameCount = 0; // Count the number of frames that have occured so as to figure out when to launch a MIRV.
+                    var boulderSpec = {}; // This is the MIRV object.
+
+                    boulderSpec.radius = MIN_BOULDER_RADIUS;
+                    boulderSpec.type = "boulder";
+                    boulderSpec.fill = "url(#bossGradient)";
+                    boulderSpec.strokeWidth = 2; // In SVG user units.
+                    boulderSpec.soundPath = BOSS_MIRV_SOUND;
+
+                    function P2C(r) { // Converts polar coordinates to Cartesian coordinates and updates the object's position based on said conversion (plus MIRV spewing).
+                        var x = r*Math.cos(theta); // Convert polar coordinates to Cartesian coordinates.
+                        var y = r*Math.sin(theta);
+
+                        boulderSpec.x = that.core.cx.baseVal.value = x + that.targetX; // Shift the origin from (0, 0) to the target position (targetX, targetY).
+                        boulderSpec.y = that.core.cy.baseVal.value = y + that.targetY; // The the (x, y) position of the boss at this moment.
+
+                        if (++frameCount >= BOSS_MIRV_SPEED) {
+                            var boulderObject = Boulder(boulderSpec);
+
+                            boulderObject.unitX = 4*Math.random() - 2; // Increase the normal boulder speed up by a factor of 2 - not effected by a FPS change. Returns a random value between -2 and 2.
+                            boulderObject.unitY = Math.random() + 1; // Increase the normal boulder speed up by a factor of 2 - not effected by a FPS change. Returns a random value between 1 and 2.
+                            _objects.push(boulderObject);
+
+                            frameCount = 0;
+                        } // if
+
+                        t += speed;
+                        that.core.r.baseVal.value = constantAmplitude * (Math.cos(t) + minimumSqueeze);
+                        if (t >= 2*Math.PI) {
+                            t = 0;
+                        }
+                    } // P2C()
+
+                    patterns[0] = function() { // Four-leaved rose.
+                        var a = 240; // Increase this value to increase the size of the four-leaved rose pattern.
+                        var r = a*(Math.sin(2*theta)); // Polar form of a four-leaved rose.
+
+                        P2C(r);
+                        theta += pattern0Speed;
+                        if (theta >= 2*Math.PI) {
+                            theta = 0;
+                        }
+                    }; // patterns[0]
+
+                    patterns[1] = function() { // Cardiod.
+                        var a = 70;
+                        var r = 2*a*(1 + Math.cos(theta + Math.PI)); // Adjust the phase to start at (0, 0): 1 + cos(0 + Pi) = 1 - 1 = 0.
+
+                        P2C(r);
+                        theta += pattern1Speed;
+                        if (theta >= 2*Math.PI) {
+                            theta = 0;
+                        }
+                    }; // patterns[1]
+
+                    patterns[2] = function() { // Three-leaved rose.
+                        var a = 260; // Increase this value to increase the size of the three-leaved rose.
+                        var r = a*Math.sin(3*theta + Math.PI);
+
+                        P2C(r);
+                        theta += pattern2Speed;
+                        if (theta >= 2*Math.PI) {
+                            theta = 0;
+                        }
+                    }; // patterns[2]
+
+                    patterns[3] = function() { // Limacon of Pascal.
+                        var a = 220;
+                        var b = 100;
+                        var phase = -Math.asin(b/a); // Change the phase of the pattern such that it starts out at (0, 0).
+                        var r = b + a*Math.sin(theta + phase);
+
+                        P2C(r);
+                        theta += pattern3Speed;
+                        if (theta >= 2*Math.PI) {
+                            theta = 0;
+                        }
+                    }; // patterns[3]
+
+                    patterns[4] = function() { // Spiral of Archimedes.
+                        var a = 35; // Increase this value to make the spiral wider.
+                        var r = a * theta; // Polar form of the spiral of Archimedes.
+
+                        P2C(r);
+                        theta += pattern4Speed;
+                        if (theta >= 3.165 * Math.PI || theta <= 0) { // Increase the non-zero value to make the spiral's outward path end closer to the top of the game's playing field.
+                            pattern4Speed = -pattern4Speed; // Reverse the direction of the spiral.
+                        }
+                    }; // patterns[4]
+
+                    return patterns[pattern];
+                } // Game.Boss.move.getRandomPattern()
+            }; // Game.Boss.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var collisionDetection = function() { // Public. Note that this method is called from a FOR loop (so this is actually a doubly nested FOR loop).
+                for (var i = 0; i < _objects.length; i++) {
+                    if (
+                        _objects[i].type == "missileExplosion" && // Only test missile explosion objects to see if they've struck the boss object.
+                        ignoreList.indexOf(_objects[i].core) == -1 && // Only look at missile explosion objects we haven't seen (i.e., recorded) before.
+                        globals.helpers.circlesOverlap(that.core, _objects[i].core) // See if the missile explosion object and the boss object have collided.
+                    )
+                    {
+                        ignoreList.push(_objects[i].core); // Record that this missile explosion has struck the boss object.
+                    } // if
+                } // for
+
+                if (ignoreList.length >= bossHitCount) {
+                    var fireballSpec = {};
+                    fireballSpec.type = "fireball";
+                    fireballSpec.image = FIREBALL_IMAGE;
+                    fireballSpec.width = 352; // This is the size, in pixels, of the fireball image.
+                    fireballSpec.height = 352;  // This is the size, in pixels, of the fireball image.
+                    fireballSpec.x = that.core.cx.baseVal.value - (fireballSpec.width / 2);
+                    fireballSpec.y = that.core.cy.baseVal.value - (fireballSpec.height / 2);
+                    fireballSpec.soundPath = FIREBALL_SOUND;
+                    _objects.push(Fireball(fireballSpec));
+
+                    that.markActive(false); // Mark the boss object as ready for destruction.
+                    updateScore(BOSS_POINTS); // Give the user their well deserved points for destroying the boss (not to be confused with Bruce Springsteen).
+                } // if
+            }; // Game.Boss.collisionDetection()
+
+            that.collisionDetection = collisionDetection;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that;
+        }; // Game.Boss()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var Fireball = function(spec) { // Private.
+            var opacity = 1;
+            var that = GameObject(spec);
+
+            that.core = globals.helpers.createImage(spec);
+
+            var fireballCenterX = that.core.x.baseVal.value + (that.core.width.baseVal.value / 2);
+            var fireballCenterY = that.core.y.baseVal.value + (that.core.height.baseVal.value / 2);
+
+            that.setPosition(fireballCenterX, fireballCenterY); // Not really necessary but better safe than sorry.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                opacity -= FIREBALL_DISAPPEAR_RATE;
+                if (opacity <= 0) {
+                    that.markActive(false); // Mark the fireball object so that it's removed from the game.
+                    nextLevel();
+                    opacity = 1; // Only enter this clause once (recall that this move() method is in a loop).
+                    return; // Do not set the opacity back to 1 in the next line of code.
+                } // if
+                that.core.setAttribute("opacity", opacity);
+            }; // Fireball.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that;
+        }; // Game.Fireball()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var Boom = function(spec) { // Private.
+            var opacity = 1;
+            var that = GameObject(spec);
+
+            that.core = globals.helpers.createImage(spec);
+
+            var boomCenterX = that.core.x.baseVal.value + (that.core.width.baseVal.value / 2); // Not really necessary just some defensive programming.
+            var boomCenterY = that.core.y.baseVal.value + (that.core.height.baseVal.value / 2);
+
+            that.setPosition(boomCenterX, boomCenterY); // Not really necessary just some defensive programming.
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            var move = function() { // Public.
+                opacity -= FIREBALL_DISAPPEAR_RATE;
+                if (opacity <= 0) {
+                    that.markActive(false); // Mark the boom object so that it's removed from the game.
+                    opacity = 1; // Only enter this clause once (recall that this move() method is in a loop).
+                    return; // Do not set the opacity back to 1 in the next line of code.
+                } // if
+                that.core.setAttribute("opacity", opacity);
+            }; // Boom.move()
+
+            that.move = move;
+
+            /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+            return that;
+        }; // Game.Boom()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var init = function() { // Public.
+            // Note that one could, if so inclined, cache (preload) the game's images here.
+            var rightBunker = 86.5; // Given the image's width, 86.5% places the image on the far right of the viewport.
+            var middleBunker = rightBunker / 2; // Center the image within the viewport.
+            var leftBunker = 0; // 0% places the image on the left of the viewport.
+            var offset = 10 // Offset the left and right images by this percentage value.
+
+            for (var i = 0; i < _objects.length; i++) { // Remove all lingering game objects from the last game, if present (and they usually are).
+                if (_objects[i]) {
+                    _objects[i].markActive(false);
+                    if (_objects[i].audio) { // As a saftey precaution, mute any potentially playing sound effects (defensive programming).
+                        _objects[i].audio.muted = true;
+                    } // if
+                } // if
+            } // for
+
+            setState("over", false);
+            setState("paused", true);
+            setState("score", 0);
+            setState("level", 1);
+
+            rightBunker = rightBunker - offset + "%";
+            middleBunker += "%";
+            leftBunker = leftBunker + offset + "%";
+
+            var bunkerSpec = {};
+            bunkerSpec.type = 'bunker';
+            bunkerSpec.image = BUNKER_IMAGE; // Ignored by GameObject(spec).
+            bunkerSpec.movable = false; // Bunkers are not movable.
+            bunkerSpec.y = "82%";
+            bunkerSpec.width = 142;
+            bunkerSpec.height = 64;
+
+            bunkerSpec.id = 'rightBunker';
+            bunkerSpec.x = rightBunker;
+            _objects.push(Bunker(bunkerSpec));
+
+            bunkerSpec.id = 'middleBunker';
+            bunkerSpec.x = middleBunker;
+            _objects.push(Bunker(bunkerSpec));
+
+            bunkerSpec.id = 'leftBunker';
+            bunkerSpec.x = leftBunker;
+            _objects.push(Bunker(bunkerSpec));
+
+            createBoulders(spec.level); // The total number of boulders (of death) that fall from the sky is a function of the game's level.
+        }; // Game.init()
+
+        that.init = init;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var pause = function() { // Public.
+            setSound('pause'); // Pause any playing sound effects.
+            window.clearInterval(_updateID);
+            spec.paused = true; // This is the spec parameter that is passed into the "Game constructor".
+            globals.helpers.opacify(true);
+        }; // Game.pause()
+
+        that.pause = pause;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var gameOver = function() {
+            if (getState().sound) {
+                setSound('mute'); // Mute any playing sound effects.
+                window.setTimeout(function () { (new Audio(GAME_OVER_SOUND)).play(); }, 1000); // Provide a 1 second buffer in case any sound effects are currently playing.
+            } // if
+            setState("over", true);
+            pause(); // Keep the user's final score on the board. Note that pause() calls clearInterval(_updateID), which stops calling update() through setInterval().
+
+            var textSpec = {};
+            textSpec.text = "Game Over";
+            textSpec.id = "gameOver";
+            textSpec.fontSize = "600%";
+            textSpec.stroke = "white";
+            textSpec.fill = "white";
+            textSpec.x = "32%"; // Account for the length of the text string itself.
+            textSpec.y = "48%"; // Looks better moved up slightly.
+            globals.helpers.createText(textSpec);
+            document.querySelector('#startButton text').style.textDecoration = "none";
+        }; // Game.gameOver()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var nextLevel = function() { // Private.
+            spec.level++;
+            if (globals.helpers.bossLevel(spec.level)) { // Fight the boss every nth level.
+                createBoss();
+            }
+            else {
+                createBoulders(spec.level);
+            }
+            _levelBox.textContent = "Level: " + spec.level;
+        }; // Game.nextLevel()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var updateScore = function(increment) { // Private.
+            spec.score += increment;
+            _scoreBox.textContent = "Score: " + spec.score;
+        }; // Game.updateScore()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var update = function() { // Private. Update the position of the game objects, etc.
+            for (var i = 0; i < _objects.length; i++) { // Must use _objects.length in that the length of objects can dynamically change.
+                if (DEBUG) { console.log("length: " + _objects.length + ", type: " + _objects[i].type + ", id: " + _objects[i].core.id); }
+                _objects[i].move(); // Move the game object in a way that only this type of game object knows how to do.
+                _objects[i].collisionDetection();
+                if (_objects[i].exited()) {
+                    _objects[i].remove(); // This must be the last thing called in the FOR loop.
+                } // if
+            } // for
+
+            var activeBunkers = 0;
+            var activeBoulders = 0;
+            for (var i = 0; i < _objects.length; i++) { // If _objects.length is 0, then activeBunkers will be 0, and the game terminates.
+                if (_objects[i].type == "bunker") {
+                    activeBunkers++;
+                }
+
+                if (_objects[i].type == "boulder") {
+                    activeBoulders++;
+                }
+            } // for
+
+            if (activeBunkers == 0) { // All bunkers have been destroyed.
+                gameOver();
+                return;
+            }
+
+            if (!globals.helpers.bossLevel(spec.level) && activeBoulders == 0) { // Player cleared current non-boss level.
+                nextLevel(); // Move to the next level.
+            }
+        }; // Game.update()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createBoulders = function(level) { // Private.
+            var boulders = level; // Determines how many boulders fall from the sky per level. Note that Math.floor(1.125*level) + 1 is a bit more aggressive.
+            var gameBackground = document.getElementById('gameBackground');
+
+            while (boulders) {
+                var boulderSpec = {};
+
+                boulderSpec.radius = Math.floor( Math.random() * (MAX_BOULDER_RADIUS - MIN_BOULDER_RADIUS + 1) ) + MIN_BOULDER_RADIUS; // Returns an integer between the min and max values.
+
+                boulderSpec.x = Math.floor( Math.random() * (gameBackground.width.baseVal.value + 1) ); // Returns an integer between 0 and the SVG viewport's width.
+                boulderSpec.y = -boulderSpec.radius; // Position the boulder just off screen.
+
+                boulderSpec.targetBunker = getRandomBunker();
+                boulderSpec.targetX = boulderSpec.targetBunker.x;
+                boulderSpec.targetY = boulderSpec.targetBunker.y;
+
+                boulderSpec.type = "boulder";
+                boulderSpec.fill = "#963";
+                boulderSpec.stroke = "white";
+                boulderSpec.strokeWidth = 2; // In SVG user units.
+                boulderSpec.movable = true; // Allow the user to click on top of a boulder to send another missile, if they're so inclined.
+
+                _objects.push(Boulder(boulderSpec));
+
+                boulders--;
+            } // while
+        }; // Game.createBoulders()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var createBoss = function() {
+            var gameBackground = document.getElementById('gameBackground');
+            var bossSpec = {}; // Specify the boss game object.
+
+            bossSpec.type = "boss";
+            bossSpec.radius = BOSS_RADIUS; // In SVG user units.
+            bossSpec.fill = "url(#bossGradient)";
+            bossSpec.x = Math.floor( Math.random() * (gameBackground.width.baseVal.value + 1) ); // Returns an integer between 0 and the SVG viewport's width.
+            bossSpec.y = -bossSpec.radius; // Position the boulder just off screen.
+            bossSpec.targetX = 0.5 * gameBackground.width.baseVal.value;
+            bossSpec.targetY = (0.5 * gameBackground.height.baseVal.value) - (0.15 * gameBackground.height.baseVal.value); // Because of the bunkers, move the boss up a bit from vertical dead center.
+            bossSpec.level = getState().level;
+            bossSpec.movable = true; // Allow the user to click on top of the boss to send another missile.
+
+            _objects.push(Boss(bossSpec));
+        }; // Game.createBoss()
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var run = function() { // Public. Invoked when the Start button is clicked.
+            setSound('play'); // Play any previously paused sound effects.
+
+            var msPerFrame = 1000 / spec.fps; // (1000 ms / 1 s ) / (spec.fps frames / 1 s) = the number of milliseconds per frame.
+            _updateID = window.setInterval(update, msPerFrame); // Using setInterval (as opposed to requestAnimationFrame) to ensure precise frames per second rate for the game.
+
+            spec.paused = false; // This is the spec parameter that is passed into the "Game constructor".
+            globals.helpers.removeText({id: "gameOver"}); // If "Game Over" text is on the screen, this removes it.
+            globals.helpers.opacify(false); // Un-opacify the screen (whether it needs it or not).
+        }; // Game.run()
+
+        that.run = run; // Make run() a public method.
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var getState = function() { // Public.
+            return {
+                fps: spec.fps, // This is the spec parameter passed into the "Game constructor".
+                score: spec.score,
+                level: spec.level,
+                paused: spec.paused,
+                over: spec.over, // A Boolean indicating if the game is over or not.
+                sound: spec.sound // A Boolean indicating if the game should have sound or not.
+            }; // When called, returns an object that provides the current state of the game.
+        }; // Game.getState()
+
+        that.getState = getState;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var setState = function(stateItem, value) { // Public.
+            switch (stateItem) {
+                case "fps":
+                    spec.fps = value;
+                    break;
+                case "score":
+                    spec.score = value;
+                    _scoreBox.textContent = "Score: " + spec.score;
+                    break;
+                case "level":
+                    spec.level = value;
+                    _levelBox.textContent = "Level: " + spec.level;
+                    break;
+                case "paused":
+                    spec.paused = value; // A Boolean value.
+                    break;
+                case "over":
+                    spec.over = value; // A Boolean value indicating if the game is over or not.
+                    break;
+                case "sound":
+                    spec.sound = value; // A Boolean value indicating if the game should have sound or not.
+                    break;
+                default:
+                    console.log("Error in switch of setState()");
+            } // switch
+        }; // Game.setState()
+
+        that.setState = setState;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        var setSound = function(action) { // Public.
+            for (var i = 0; i < _objects.length; i++) {
+                if (_objects[i].audio) {
+                    switch (action) {
+                        case "mute":
+                            _objects[i].audio.muted = true;
+                            break;
+                        case "play":
+                            _objects[i].audio.play();
+                            break;
+                        case "pause":
+                            _objects[i].audio.pause();
+                            break;
+                        case "load":
+                            _objects[i].audio.load();
+                            break;
+                        default:
+                            console.log("Error in switch of setSound()");
+                    } // switch
+                } // if
+            } // for
+        } // Game.setSound()
+
+        that.setSound = setSound;
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        return that; // The object returned by the Game() constructor.
+    })({fps: FPS, sound: true}); // Execute this anonymous constructor now, while passing in the constructor's initial state.
+
+    /*************************************************************************************************************************************************************/
+
+    (function() {
+        document.getElementById('startButton').addEventListener('click', handleStartButton, false); // Single touch events are transformed into click events in IE10 and above.
+        document.getElementById('soundButton').addEventListener('click', handleSoundButton, false);
+        document.getElementById('infoButton').addEventListener('click', handleInfoButton, false);
+        document.getElementById('gameClickPlane').addEventListener('click', handleGameClickPlane, false);
+        document.getElementsByTagName('svg')[0].addEventListener('dragstart', function (evt) { evt.preventDefault(); }, false); // Don't let the user drag the screen in that it's very easy to mistakenly drag the screen when playing the game at speed.
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        function handleStartButton() {
+            var game = globals.game;
+
+            if (game.getState().over) {
+                game.init(); // Note that this sets spec.paused to true.
+            }
+
+            if (game.getState().paused) {
+                game.run();
+                document.querySelector('#startButton text').style.textDecoration = "line-through";
+            }
+            else {
+                game.pause();
+                document.querySelector('#startButton text').style.textDecoration = "none";
+            }
+        } // handleStartButton
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        function handleSoundButton() {
+            var game = globals.game;
+
+            if (game.getState().sound) {
+                game.setSound('mute'); // Mute any currently playing sounds.
+                game.setState('sound', false); // Do not create any audio objects moving forward.
+                document.querySelector('#soundButton text').style.textDecoration = "line-through";
+            }
+            else {
+                game.setState('sound', true); // Create audio objects moving forward.
+                document.querySelector('#soundButton text').style.textDecoration = "none";
+            }
+        } // handleSoundButton
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        function handleInfoButton() {
+            if (!globals.game.getState().paused) { // If the game is not paused, then it's running - so pause it.
+                handleStartButton(); // Pause the game whilst the user looks at the info on the info webpage.
+            }
+            document.getElementById('iframe').style.display = "block";
+        } // handleInfoButton
+
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        function handleGameClickPlane(evt) {
+            var helpers = globals.helpers;
+            var game = globals.game;
+            var point = null;
+
+            if (!game.getState().paused) { // If the game is not paused, then it's running.
+                point = helpers.createPoint(evt.pageX, evt.pageY);
+                point = helpers.coordinateTransform(point, evt.target); // Using the same point object, convert screen coordinates to playing field coordinates.
+                game.createMissile(point); // Create a new missile object and add it to the list of core game objects.
+            } // if
+        } // handleGameClickPlane
+    })(); // Execute this anonymous function now, thereby wiring up all event handlers.
+
+    /*************************************************************************************************************************************************************/
+
+    globals.game.init();
+</script>
+
+</body>
+</body>
+</html>
