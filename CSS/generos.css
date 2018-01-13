@@ -1,0 +1,109 @@
+body {
+    background-color: #1b3881;
+	font-family: arial, sans-serif;
+}
+h1 {
+    border: 4px solid powderblue;
+    padding: 10px;
+	font-size: 300%;
+	background-color: white;
+}
+
+h2 {
+    border: 1px solid powderblue;
+    padding: 10px;
+	color: #9D9E9D;
+}
+
+h3 {
+	border: 2px solid powderblue;
+    padding: 10px;
+	font-size: 200%;
+	background-color: white;
+	text-align: center;
+}
+
+h4 {
+	color: #9D9E9D;
+
+}
+
+
+table, th, td {
+    border: 3px solid powderblue;
+	background-color: #BFC5BF;
+    border-collapse: collapse;
+	text-align: center;
+	
+}
+th, td {
+    padding: 15px;
+}
+
+.imgprincipal {
+    border: 5px solid white;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+	padding: 10px;
+
+}
+
+.imgprincipal2 {
+    border: 5px solid white;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+	padding: 10px;
+
+}
+
+.imgdangaronpa{
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+
+}
+
+.imgcomic{
+	border: 2px solid powderblue;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+	
+}
+
+.imgop{
+	border: 2px solid powderblue;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+	
+}
+
+p {
+	font-family: arial, sans-serif;
+	text-align: left;
+	border: 1px solid powderblue;
+    padding: 10px;
+	color: black;
+	background-color: white;
+}
+
+ul {
+	background: white;
+    padding: 20px;
+	border: 2px solid powderblue;
+}
+
+ul,li {
+    padding: 10px;
+	background-color: white;
+	margin: 5px;
+	
+}
