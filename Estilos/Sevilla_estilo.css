@@ -1,5 +1,5 @@
 body{
-    background-color: #1b3881;
+    background-color: #1b3881;  /* Color de fondo  */
 }
 
 nav ul {
@@ -76,8 +76,8 @@ canvas, #titulo {
     margin-top: 100px;
 }
 
-
-table{
+table {
+    /* Borde de fuera de la tabla */
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 70%;
@@ -86,19 +86,51 @@ table{
     margin: 50px auto;
 }
 
-p{
-    text-align: center;
-}
-
-h2{
-    text-align: center;
-}
-
-td, tr{
+td{
+    /* Borde finito de dentro de la tabla */
     text-align: center;
     padding: 8px;
     color: black;
     background-color: white;
     width: 70%;
     height: 58px;
+}
+th {
+    /* Borde finito de dentro de la tabla */
+    text-align: center;
+    padding: 8px;
+    color: black;
+    background-color: #463c54;
+}
+
+tr{
+    height: 96px;
+    background-color: white;
+    text-align: center;
+    width: 70%;
+}
+
+tr:nth-child(even) { /* Espacio entre filas */
+    background-color: white;
+    height: 18px;
+    text-align: center;
+}
+h2{
+    text-align: center;
+}
+p, td{    /* Cajitas blancas */
+    color: black;
+    font-weight: 700;
+    height: 200px;
+    text-align: justify;
+}
+
+#Catedral, #Giralda, #Sevilla{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+    display:block;
+    margin:auto;
 }
