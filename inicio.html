@@ -93,17 +93,19 @@
 
        window.addEventListener('load', function(){
            console.log('El contenido se ha cargado');
-           document.slider.src = 'Imagenes/Slideshare/Anbu.jpg';
+           document.slider.src = 'Imagenes/Slideshare/img4.jpg';
            var imagenes = [];
-           imagenes[0] = 'Imagenes/Slideshare/Anbu.jpg';
-           imagenes[1] = 'Imagenes/Slideshare/ninja.jpg';
+           imagenes[0] = 'Imagenes/Slideshare/img4.jpg';
+           imagenes[1] = 'Imagenes/Slideshare/img1.jpg';
+           imagenes[2] = 'Imagenes/Slideshare/img2.jpg';
+           imagenes[3] = 'Imagenes/Slideshare/img3.jpg';
 
            var i = 0;
            var tiempo = 3000;
 
            function cambiar_imagen() {
                document.slider.src = imagenes[i];
-               if(i<1){
+               if(i<3){
                    console.log('HE ENTRADO EN EL IF');
                    i++;
                }else{
