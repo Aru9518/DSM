@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link  rel="stylesheet" type="text/css" href="Estilos/inicio_estilo.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/jquery.kwicks.css">
+    <title>Prueba</title>
+    <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
+
+    <canvas id="titulo" width="970" height="75" >
+        Your browser does not support the HTML5 canvas tag.</canvas>
+    <script>
+        var c = document.getElementById("titulo");
+        var ctx = c.getContext("2d");
+        //ctx.font = "bold 28px Arial";
+        //ctx.strokeStyle='black';
+        //ctx.fillStyle="black";
+        //ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",10,50);
+        ctx.font="bold 30pt 'Indie Flower', cursive";
+        ctx.lineWidth='1';
+        ctx.strokeStyle='red';
+        ctx.fillStyle="black";
+        ctx.fillText("XXI Salón Internacional del Cómic de Sevilla",50,50);
+        ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",50,50);
+    </script>
+
+    <script>
+        function quedan(){
+            var apertura = 1545792244100 + 1500000000;
+            var d = new Date();
+            var n = d.getTime();
+            var diferencia = (apertura - n)/1000;
+            var dias = Math.floor(diferencia/(60*60*24));
+            $("#quedan_dias").html(dias);
+            var horas = Math.floor((diferencia%(60*60*24))/(60*60));
+            $("#quedan_horas").html(horas);
+//        console.log((diferencia%(60*60*24));
+            var minutos = Math.floor((diferencia%(60*60*24))%(60*60));
+            $("#quedan_minutos").html(minutos);
+            var minutos = Math.floor((diferencia%(60*60*24))%(60*60)/60);
+            $("#quedan_minutos").html(minutos);
+            var segundos = Math.floor((diferencia%(60*60*24))%(60*60)%60);
+            $("#quedan_segundos").html(segundos);
+        }
+        $(function(){
+            quedan();
+            setInterval(function(){
+                quedan();
+            }, 1000);
+        });
+    </script>
+
+    <img name="slider" id="slider" width="1200px" height="500px">
+    <script>
+       /* var noticias;
+        $.getJSON("noticias_json.php", {}, function(data){
+            noticias = data;
+            for(var i=2; i<=noticias.length; i++){
+                $("#punto"+i).show();
+            }
+        });
+        var contador_noticias = 0;
+        var anterior_punto = 1;
+        cargarNoticia();
+        function cargarNoticiaManual(id){
+            contador_noticias = id-1;
+            clearInterval(interval_noticias);
+            cargarNoticia();
+            interval_noticias = setInterval(function(){
+                //console.log("dos");
+                cargarNoticia();
+            }, 5000);
+        }
+        function cargarNoticia(){
+            $("#noticia").css("background-image", "url('./Imagenes/Slideshare/"+noticias[contador_noticias].id+".jpg')");
+            $("#noticia_titulo").html(noticias[contador_noticias].titulo);
+            $("#noticia_fecha").html(noticias[contador_noticias].fecha);
+            $("#noticia").attr("href", "Slideshare/"+noticias[contador_noticias].id+"/"+noticias[contador_noticias].url);
+            $("#punto"+anterior_punto).attr("src", "Imagenes/Slideshare/punto_azul.png");
+            $("#punto"+(contador_noticias+1)).attr("src", "Imagenes/Slideshare/punto_blanco.png");
+            anterior_punto = contador_noticias+1;
+            if(contador_noticias==noticias.length-1){
+                contador_noticias = 0;
+            }else{
+                contador_noticias++;
+            }
+        }
+        var interval_noticias = setInterval(function(){
+            //console.log("uno");
+            cargarNoticiaManual(2);
+        }, 5000);*/
+
+       window.addEventListener('load', function(){
+           console.log('El contenido se ha cargado');
+           document.slider.src = 'Imagenes/Slideshare/Anbu.jpg';
+           var imagenes = [];
+           imagenes[0] = 'Imagenes/Slideshare/Anbu.jpg';
+           imagenes[1] = 'Imagenes/Slideshare/ninja.jpg';
+
+           var i = 0;
+           var tiempo = 3000;
+
+           function cambiar_imagen() {
+               document.slider.src = imagenes[i];
+               if(i<1){
+                   console.log('HE ENTRADO EN EL IF');
+                   i++;
+               }else{
+                   i = 0;
+               }
+           }
+
+           setInterval(cambiar_imagen, tiempo);
+       });
+
+    </script>
+
+</head>
+<body>
+<nav>
+    <ul id="menu">
+        <li><a href="inicio.html">Inicio</a>
+        </li>
+        <li><a href="horarios.html">Información General</a>
+            <ul class="submenu">
+                <li><a href="como_llegar.html">¿Cómo llegar?</a></li>
+                <li><a href="Sevilla.html">Sobre la Ciudad</a></li>
+                <li><a href="Quienes_somos.php">Quienes somos</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Programación</a>
+            <ul class="submenu">
+                <li><a href="#"> Lunes </a></li>
+                <li><a href="#"> Martes </a></li>
+                <li><a href="#"> Miercoles </a></li>
+                <li><a href="#"> Jueves </a></li>
+                <li><a href="#"> Viernes </a></li>
+                <li><a href="#"> Sabado </a></li>
+                <li><a href="#"> Domingo </a></li>
+            </ul>
+        </li>
+        <li><a href="#">Comics</a>
+            <ul class="submenu">
+                <li><a href="#">Gore</a></li>
+                <li><a href="#">Acción</a></li>
+                <li><a href="#">Romance</a></li>
+                <li><a href="#">Estadísticas</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Invitados</a>
+            <ul class="submenu">
+                <li><a href="#">Eichiro Oda</a></li>
+                <li><a href="#">Masashi Kishimoto</a></li>
+                <li><a href="#">Akira Toriyama</a></li>
+                <li><a href="#">Alan Moore</a></li>
+                <li><a href="#">Gosho Aoyama</a></li>
+                <li><a href="#">Stan Lee</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Galeria</a>
+            <ul class="submenu">
+                <li><a href="galeria.html">Fotos</a></li>
+                <li><a href="#">Videos</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+
+<ul id="video">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/SFMSK1Ivg6Q" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+</ul>
+
+<div id="cuenta_atras">
+    <img src="Imagenes/reloj_de_arena.png" style="vertical-align:middle; height: 120px;"> Quedan <span id="quedan_dias">0</span> días, <span id="quedan_horas">0</span> horas, <span id="quedan_minutos">0</span> minutos y <span id="quedan_segundos">0</span> segundos.
+</div>
+
+
+</body>
+</html>

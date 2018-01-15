@@ -71,8 +71,8 @@
 </nav>
 
 <body>
-    <table>
-        <tr><td>
+<table>
+    <tr><td>
             <section>
                 <h2> ¡Bienvenido! </h2>
                 <p> Somos una organización</p>
@@ -85,7 +85,7 @@
                     En caso de no haber espacios disponibles, entrarás en nuestra lista de espera para futuras ediciones. ¡Te esperamos!
                 </p>
 
-                <form action="Quienes_somos.php" method="post" style="text-align: center">
+                <form action="Concurso.php" method="post" style="text-align: center">
                     <label> Nombre </label>
                     <input type="text" name="Nombre" required>
                     <br>
@@ -98,23 +98,20 @@
                     <label> Telefono </label>
                     <input type="tel" name="Telefono" required>
                     <br>
-                    <label> Stand </label>
+                    <label> Concurso </label>
                     <select name="Stand">
-                        <option name="Comercial" value="Comercial">Comercial</option>
-                        <option name="Restauracion" value="Comercial">Restauracion</option>
-                        <option name="Artesano" value="Artesano">Comercial</option>
-                        <option name="No Comercial" value="No Comercial">No Comercial</option>
+                        <option name="Comercial" value="Concurso1">Comercial</option>       <!-- Introducir aquí el nombre del primer concurso y así sucesivamente en las siguientes líneas. Para añadir más concursos copiar y pegar código  -->
+                        <option name="Restauracion" value="Concurso2">Restauracion</option>
+                        <option name="Artesano" value="Concurso3">Comercial</option>
+                        <option name="No Comercial" value="Concurso4">No Comercial</option>
                     </select>
-                    <br>
-                    <label> Comentario </label>
-                    <input type="text" name="Comentario" >
                     <br>
                     <input type="submit" name="enviar" value="Enviar">
                 </form>
             </section>
-            </td></tr>
+        </td></tr>
 
-    </table>
+</table>
 
 </body>
 </html>
@@ -130,14 +127,13 @@ try{
 
 
 if(isset($_POST['enviar'])){
-    $sql_info = "INSERT INTO Stand (nombre, apellidos, correo, telefono, tipo, comentario) VALUES (:nombre, :apellidos, :correo, :telefono, :tipo, :comentario)";
+    $sql_info = "INSERT INTO Stand (nombre, apellidos, correo, telefono, tipo) VALUES (:nombre, :apellidos, :correo, :telefono, :tipo)";
     $resultado = $base->prepare($sql_info);
     $resultado->bindParam(':nombre', $_POST['Nombre'], PDO::PARAM_STR);
     $resultado->bindParam(':apellidos', $_POST['Apellidos'], PDO::PARAM_STR);
     $resultado->bindParam(':correo', $_POST['Email'], PDO::PARAM_STR);
     $resultado->bindParam(':telefono', $_POST['Telefono'], PDO::PARAM_INT);
     $resultado->bindParam(':tipo', $_POST['Stand'], PDO::PARAM_STR);
-    $resultado->bindParam(':comentario', $_POST['Comentario'], PDO::PARAM_STR);
     try {
         $resultado->execute();
     }catch(Exception $e){

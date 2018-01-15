@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Galeria</title>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge"> <!-- For intranet testing only, remove in production. -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Slide Show</title>
+    <link  rel="stylesheet" type="text/css" href="Estilos/galeria_estilo.css">
+    <canvas id="titulo" width="970" height="75" >
+        Your browser does not support the HTML5 canvas tag.</canvas>
+    <script>
+        var c = document.getElementById("titulo");
+        var ctx = c.getContext("2d");
+        //ctx.font = "bold 28px Arial";
+        //ctx.strokeStyle='black';
+        //ctx.fillStyle="black";
+        //ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",10,50);
+        ctx.font="bold 30pt 'Indie Flower', cursive";
+        ctx.lineWidth='1';
+        ctx.strokeStyle='red';
+        ctx.fillStyle="black";
+        ctx.fillText("XXI Salón Internacional del Cómic de Sevilla",50,50);
+        ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",50,50);
+    </script>
+    </head>
+<body>
+<nav>
+    <ul id="menu">
+        <li><a href="inicio.html">Inicio</a>
+        </li>
+        <li><a href="horarios.html">Información General</a>
+            <ul class="submenu">
+                <li><a href="como_llegar.html">¿Cómo llegar?</a></li>
+                <li><a href="Sevilla.html">Sobre la Ciudad</a></li>
+                <li><a href="Quienes_somos.php">Quienes somos</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Programación</a>
+            <ul class="submenu">
+                <li><a href="#"> Lunes </a></li>
+                <li><a href="#"> Martes </a></li>
+                <li><a href="#"> Miercoles </a></li>
+                <li><a href="#"> Jueves </a></li>
+                <li><a href="#"> Viernes </a></li>
+                <li><a href="#"> Sabado </a></li>
+                <li><a href="#"> Domingo </a></li>
+            </ul>
+        </li>
+        <li><a href="#">Comics</a>
+            <ul class="submenu">
+                <li><a href="#">Gore</a></li>
+                <li><a href="#">Acción</a></li>
+                <li><a href="#">Romance</a></li>
+                <li><a href="#">Estadísticas</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Invitados</a>
+            <ul class="submenu">
+                <li><a href="#">Eichiro Oda</a></li>
+                <li><a href="#">Masashi Kishimoto</a></li>
+                <li><a href="#">Akira Toriyama</a></li>
+                <li><a href="#">Alan Moore</a></li>
+                <li><a href="#">Gosho Aoyama</a></li>
+                <li><a href="#">Stan Lee</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Galeria</a>
+            <ul class="submenu">
+                <li><a href="galeria.html">Fotos</a></li>
+                <li><a href="#">Videos</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<div id="slideshow">
+
+    <ul class="slides">
+        <li><img src="Imagenes/galeria/ImagenesEvento/img1.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img2.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img3.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img4.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img5.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img6.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img7.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img8.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img9.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img10.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img11.jpg" style="height: 550px" width="900px"></li>
+        <li><img src="Imagenes/galeria/ImagenesEvento/img12.jpg" style="height: 550px" width="900px"></li>
+    </ul>
+
+    <span class="arrow previous" id="arrow1"></span>
+    <span class="arrow next" id="arrow2"></span>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript">google.load("jquery", "1.4.2");</script>
+<script src="script.js"></script>
+
+
+</body>
+</html>

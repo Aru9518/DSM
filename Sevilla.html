@@ -2,74 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Como llegar</title>
+    <title>Sevilla</title>
+    <link  rel="stylesheet" type="text/css" href="Estilos/Sevilla_estilo.css">
+    <canvas id="titulo" width="970" height="75" >
+        Your browser does not support the HTML5 canvas tag.</canvas>
+    <script>
+        var c = document.getElementById("titulo");
+        var ctx = c.getContext("2d");
+        //ctx.font = "bold 28px Arial";
+        //ctx.strokeStyle='black';
+        //ctx.fillStyle="black";
+        //ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",10,50);
+        ctx.font="bold 30pt 'Indie Flower', cursive";
+        ctx.lineWidth='1';
+        ctx.strokeStyle='red';
+        ctx.fillStyle="black";
+        ctx.fillText("XXI Salón Internacional del Cómic de Sevilla",50,50);
+        ctx.strokeText("XXI Salón Internacional del Cómic de Sevilla",50,50);
+    </script>
 </head>
 <body>
-<style>
-    body{
-        background-color: #1b3881;  /* Color de fondo  */
-    }
-    table {
-        /* Borde de fuera de la tabla */
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 70%;
-        background-color: white;
-        text-align: center;
-        margin: 0 auto;
-    }
 
-    td{
-         /* Borde finito de dentro de la tabla */
-        text-align: center;
-        padding: 8px;
-        color: black;
-        background-color: white;
-        width: 70%;
-        height: 58px;
-    }
-    th {
-         /* Borde finito de dentro de la tabla */
-        text-align: center;
-        padding: 8px;
-        color: black;
-        background-color: #463c54;
-    }
+<nav>
+    <ul id="menu">
+        <li><a href="inicio.html">Inicio</a>
+        </li>
+        <li><a href="horarios.html">Información General</a>
+            <ul class="submenu">
+                <li><a href="como_llegar.html">¿Cómo llegar?</a></li>
+                <li><a href="Sevilla.html">Sobre la Ciudad</a></li>
+                <li><a href="Quienes_somos.php">Quienes somos</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Programación</a>
+            <ul class="submenu">
+                <li><a href="#"> Lunes </a></li>
+                <li><a href="#"> Martes </a></li>
+                <li><a href="#"> Miercoles </a></li>
+                <li><a href="#"> Jueves </a></li>
+                <li><a href="#"> Viernes </a></li>
+                <li><a href="#"> Sabado </a></li>
+                <li><a href="#"> Domingo </a></li>
+            </ul>
+        </li>
+        <li><a href="#">Comics</a>
+            <ul class="submenu">
+                <li><a href="#">Gore</a></li>
+                <li><a href="#">Acción</a></li>
+                <li><a href="#">Romance</a></li>
+                <li><a href="#">Estadísticas</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Invitados</a>
+            <ul class="submenu">
+                <li><a href="#">Eichiro Oda</a></li>
+                <li><a href="#">Masashi Kishimoto</a></li>
+                <li><a href="#">Akira Toriyama</a></li>
+                <li><a href="#">Alan Moore</a></li>
+                <li><a href="#">Gosho Aoyama</a></li>
+                <li><a href="#">Stan Lee</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Galeria</a>
+            <ul class="submenu">
+                <li><a href="galeria.html">Fotos</a></li>
+                <li><a href="#">Videos</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
 
-    tr{
-        height: 96px;
-        background-color: white;
-        text-align: center;
-        width: 70%;
-    }
-
-    tr:nth-child(even) { /* Espacio entre filas */
-        background-color: white;
-        height: 18px;
-        text-align: center;
-    }
-    h2{
-        text-align: center;
-    }
-    p, td{    /* Cajitas blancas */
-        color: black;
-        font-weight: 700;
-        height: 200px;
-        text-align: justify;
-    }
-
-    #Catedral, #Giralda, #Sevilla{
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 0;
-        padding-right: 0;
-        display:block;
-        margin:auto;
-    }
-
-
-</style>
 <table>
     <tr> <td>
         <section>
@@ -136,7 +138,11 @@
             <h2> Gastronomía </h2>
 
             <p>
-                En Sevilla encontrarás muchos bares, restaurantes y sitios de tapeo a pie de calle
+                En Sevilla encontrarás muchos bares, restaurantes y sitios de tapeo a pie de calle. Destacan Bar la Alfalfa, Bar Catedral, Karpanta... entre otros.
+                En la gastronomía Sevillana destacan principalmente el gazpacho andaluz, la ensaladilla rusa, diversos tipos de platos fríos denominados salpicón y ensaladas variadas.
+                El pescao frito es un plato que consiste en freír un variado de pescado enharinado en abundante aceite de oliva que se consume durante todo el año. Asimismo,
+                es muy común degustar una amplia gama de chacina, principalmente, jamón serrano,
+                así como distintos tipos de queso; aunque no menos común es degustar el ya tradicional serranito, un bocadillo andaluz con orígenes sevillanos.
             </p>
         </section>
 
